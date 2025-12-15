@@ -94,18 +94,23 @@ eks-fargate-infrastructure/
 ### Step 1: Create S3 Backend (First Time Only)
 
 ```bash
-# Create S3 bucket for Terraform state
-aws s3api create-bucket \
-  --bucket eks-fargate-microservices-tfstate-prod \
-  --region us-east-1
-
-# Enable versioning
-aws s3api put-bucket-versioning \
-  --bucket eks-fargate-microservices-tfstate-prod \
-  --versioning-configuration Status=Enabled
+# Use bootstrap to create S3 buckets for all environments
+cd bootstrap
+terraform init
+terraform apply -auto-approve
+cd ..
 ```
 
-**Note:** State locking is handled by S3-native locking (`use_lockfile = true`). No DynamoDB table needed.
+This creates 3 S3 buckets with:
+- ✅ Versioning enabled
+- ✅ Encryption at rest (AES256)
+- ✅ Public access blocked
+- ✅ S3-native state locking (no DynamoDB needed)
+
+**Buckets created:**
+- `eks-fargate-microservices-tfstate-dev`
+- `eks-fargate-microservices-tfstate-staging`
+- `eks-fargate-microservices-tfstate-prod`
 
 ### Step 2: Initialize and Deploy Infrastructure
 
