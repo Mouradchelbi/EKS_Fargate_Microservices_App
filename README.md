@@ -319,15 +319,56 @@ redis_num_nodes = 3
 
 ## 🧹 Cleanup
 
+### Development/Staging Environments
+
+```bash
+# Delete Kubernetes resources first (if deployed)
+kubectl delete -f ../../kubernetes/manifests/
+
+# Destroy infrastructure (ECR repositories will be destroyed even with images)
+cd environments/dev  # or environments/staging
+terraform destroy -auto-approve
+```
+
+### Production Environment
+
+Production has **deletion protection enabled** on critical resources for safety. You have two options:
+
+#### Option 1: Disable Deletion Protection (Recommended)
+
 ```bash
 # Delete Kubernetes resources first
 kubectl delete -f ../../kubernetes/manifests/
 
-# Destroy infrastructure
+# Destroy with deletion protection disabled
+cd environments/prod
+terraform destroy -var="deletion_protection=false" -var="skip_final_snapshot=true"
+```
+
+#### Option 2: Manual Deletion Protection Removal
+
+```bash
+# 1. Manually disable deletion protection in AWS Console:
+#    - RDS: Database → Modify → Uncheck "Deletion protection"
+#    - ALB: Load Balancer → Attributes → Disable "Deletion protection"
+
+# 2. Then run destroy
 terraform destroy -auto-approve
 ```
 
-⚠️ **Warning**: This will delete all resources including databases. Ensure you have backups!
+### Complete Teardown (Including S3 State Buckets)
+
+```bash
+# After destroying all environments, optionally remove S3 buckets
+cd bootstrap
+terraform destroy -auto-approve
+```
+
+⚠️ **Important Notes:**
+- **ECR Repositories**: Automatically deleted even with container images (force_destroy enabled)
+- **RDS Final Snapshots**: Production creates final snapshots unless `skip_final_snapshot=true`
+- **Data Loss**: All data will be permanently deleted. Ensure you have backups!
+- **S3 State Buckets**: Destroying these will remove all Terraform state history
 
 ## 📝 Important Notes
 
