@@ -136,32 +136,26 @@ aws eks update-kubeconfig --region us-east-1 --name eks-fargate-microservices-pr
 
 ### Step 4: Install AWS Load Balancer Controller
 
+The IAM role for the ALB Controller is already created by Terraform! Just install the Helm chart:
+
 ```bash
-# Create IAM policy for ALB Controller
-curl -o iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.7.0/docs/install/iam_policy.json
+# Get the IAM role ARN from Terraform outputs
+ALB_ROLE_ARN=$(terraform output -raw alb_controller_role_arn)
 
-aws iam create-policy \
-  --policy-name AWSLoadBalancerControllerIAMPolicy \
-  --policy-document file://iam-policy.json
-
-# Create service account
-eksctl create iamserviceaccount \
-  --cluster=eks-fargate-microservices-prod \
-  --namespace=kube-system \
-  --name=aws-load-balancer-controller \
-  --attach-policy-arn=arn:aws:iam::ACCOUNT_ID:policy/AWSLoadBalancerControllerIAMPolicy \
-  --override-existing-serviceaccounts \
-  --approve
-
-# Install the controller
+# Add EKS Helm repository
 helm repo add eks https://aws.github.io/eks-charts
 helm repo update
 
+# Install AWS Load Balancer Controller
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
   --set clusterName=eks-fargate-microservices-prod \
-  --set serviceAccount.create=false \
-  --set serviceAccount.name=aws-load-balancer-controller
+  --set serviceAccount.create=true \
+  --set serviceAccount.name=aws-load-balancer-controller \
+  --set serviceAccount.annotations."eks\.amazonaws\.com/role-arn"="$ALB_ROLE_ARN"
+
+# Verify installation
+kubectl get deployment -n kube-system aws-load-balancer-controller
 ```
 
 ### Step 5: Update Kubernetes Manifests with Terraform Outputs

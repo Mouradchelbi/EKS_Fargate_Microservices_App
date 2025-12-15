@@ -112,6 +112,19 @@ module "alb" {
 }
 
 #=============================================================================
+# AWS Load Balancer Controller IRSA Role
+#=============================================================================
+module "alb_controller_irsa" {
+  source            = "../../modules/alb-controller-irsa"
+  cluster_name      = "${var.project_name}-staging"
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_provider_url = module.eks.oidc_provider_url
+  tags              = local.common_tags
+  
+  depends_on = [module.eks]
+}
+
+#=============================================================================
 # Fargate Profiles for Each Microservice
 #=============================================================================
 

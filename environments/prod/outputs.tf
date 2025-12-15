@@ -120,3 +120,8 @@ output "analytics_service_irsa_role_arn" {
   description = "Analytics Service IRSA role ARN"
   value       = module.irsa_analytics_service.role_arn
 }
+
+output "alb_controller_role_arn" {
+  description = "AWS Load Balancer Controller IAM role ARN"
+  value       = module.alb_controller_irsa.role_arn
+}
