@@ -45,6 +45,12 @@ variable "repository_policy" {
   default     = null
 }
 
+variable "force_destroy" {
+  description = "Allow deletion of repository even if it contains images"
+  type        = bool
+  default     = false
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
