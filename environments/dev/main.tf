@@ -30,6 +30,59 @@ locals {
 }
 
 #=============================================================================
+# ECR Repositories
+#=============================================================================
+module "ecr_user_service" {
+  source = "../../modules/ecr"
+  
+  repository_name  = "${var.project_name}-user-service-dev"
+  scan_on_push     = true
+  max_image_count  = 30
+  
+  tags = local.common_tags
+}
+
+module "ecr_order_service" {
+  source = "../../modules/ecr"
+  
+  repository_name  = "${var.project_name}-order-service-dev"
+  scan_on_push     = true
+  max_image_count  = 30
+  
+  tags = local.common_tags
+}
+
+module "ecr_payment_service" {
+  source = "../../modules/ecr"
+  
+  repository_name  = "${var.project_name}-payment-service-dev"
+  scan_on_push     = true
+  max_image_count  = 30
+  
+  tags = local.common_tags
+}
+
+module "ecr_notification_service" {
+  source = "../../modules/ecr"
+  
+  repository_name  = "${var.project_name}-notification-service-dev"
+  scan_on_push     = true
+  max_image_count  = 30
+  
+  tags = local.common_tags
+}
+
+module "ecr_analytics_service" {
+  source = "../../modules/ecr"
+  
+  repository_name  = "${var.project_name}-analytics-service-dev"
+  scan_on_push     = true
+  max_image_count  = 30
+  
+  tags = local.common_tags
+}
+
+#=============================================================================
 # VPC Module
 #=============================================================================
 module "vpc" {

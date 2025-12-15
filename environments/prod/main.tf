@@ -30,6 +30,50 @@ locals {
 }
 
 #=============================================================================
+# ECR Repositories for Microservices
+#=============================================================================
+
+module "ecr_user_service" {
+  source          = "../../modules/ecr"
+  repository_name = "${var.project_name}-user-service"
+  scan_on_push    = true
+  max_image_count = 30
+  tags            = merge(local.common_tags, { Service = "user-service" })
+}
+
+module "ecr_order_service" {
+  source          = "../../modules/ecr"
+  repository_name = "${var.project_name}-order-service"
+  scan_on_push    = true
+  max_image_count = 30
+  tags            = merge(local.common_tags, { Service = "order-service" })
+}
+
+module "ecr_payment_service" {
+  source          = "../../modules/ecr"
+  repository_name = "${var.project_name}-payment-service"
+  scan_on_push    = true
+  max_image_count = 30
+  tags            = merge(local.common_tags, { Service = "payment-service" })
+}
+
+module "ecr_notification_service" {
+  source          = "../../modules/ecr"
+  repository_name = "${var.project_name}-notification-service"
+  scan_on_push    = true
+  max_image_count = 30
+  tags            = merge(local.common_tags, { Service = "notification-service" })
+}
+
+module "ecr_analytics_service" {
+  source          = "../../modules/ecr"
+  repository_name = "${var.project_name}-analytics-service"
+  scan_on_push    = true
+  max_image_count = 30
+  tags            = merge(local.common_tags, { Service = "analytics-service" })
+}
+
+#=============================================================================
 # VPC Module
 #=============================================================================
 module "vpc" {

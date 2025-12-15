@@ -120,3 +120,31 @@ output "alb_controller_role_arn" {
   description = "AWS Load Balancer Controller IAM role ARN"
   value       = module.alb_controller_irsa.role_arn
 }
+
+#=============================================================================
+# ECR Outputs
+#=============================================================================
+output "ecr_user_service_url" {
+  description = "User Service ECR repository URL"
+  value       = module.ecr_user_service.repository_url
+}
+
+output "ecr_order_service_url" {
+  description = "Order Service ECR repository URL"
+  value       = module.ecr_order_service.repository_url
+}
+
+output "ecr_payment_service_url" {
+  description = "Payment Service ECR repository URL"
+  value       = module.ecr_payment_service.repository_url
+}
+
+output "ecr_notification_service_url" {
+  description = "Notification Service ECR repository URL"
+  value       = module.ecr_notification_service.repository_url
+}
+
+output "ecr_analytics_service_url" {
+  description = "Analytics Service ECR repository URL"
+  value       = module.ecr_analytics_service.repository_url
+}

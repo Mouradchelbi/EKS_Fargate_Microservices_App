@@ -158,23 +158,75 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 kubectl get deployment -n kube-system aws-load-balancer-controller
 ```
 
-### Step 5: Update Kubernetes Manifests with Terraform Outputs
+### Step 5: Build and Push Container Images to ECR
+
+```bash
+# Get ECR repository URLs from Terraform outputs
+USER_SERVICE_ECR=$(terraform output -raw ecr_user_service_url)
+ORDER_SERVICE_ECR=$(terraform output -raw ecr_order_service_url)
+PAYMENT_SERVICE_ECR=$(terraform output -raw ecr_payment_service_url)
+NOTIFICATION_SERVICE_ECR=$(terraform output -raw ecr_notification_service_url)
+ANALYTICS_SERVICE_ECR=$(terraform output -raw ecr_analytics_service_url)
+
+# Get ECR login credentials
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${USER_SERVICE_ECR%%/*}
+
+# Build and push each service (replace with your actual service directories)
+# User Service
+cd /path/to/user-service
+docker build -t user-service:latest .
+docker tag user-service:latest $USER_SERVICE_ECR:latest
+docker push $USER_SERVICE_ECR:latest
+
+# Order Service
+cd /path/to/order-service
+docker build -t order-service:latest .
+docker tag order-service:latest $ORDER_SERVICE_ECR:latest
+docker push $ORDER_SERVICE_ECR:latest
+
+# Payment Service
+cd /path/to/payment-service
+docker build -t payment-service:latest .
+docker tag payment-service:latest $PAYMENT_SERVICE_ECR:latest
+docker push $PAYMENT_SERVICE_ECR:latest
+
+# Notification Service
+cd /path/to/notification-service
+docker build -t notification-service:latest .
+docker tag notification-service:latest $NOTIFICATION_SERVICE_ECR:latest
+docker push $NOTIFICATION_SERVICE_ECR:latest
+
+# Analytics Service
+cd /path/to/analytics-service
+docker build -t analytics-service:latest .
+docker tag analytics-service:latest $ANALYTICS_SERVICE_ECR:latest
+docker push $ANALYTICS_SERVICE_ECR:latest
+```
+
+### Step 6: Update Kubernetes Manifests with Terraform Outputs
 
 ```bash
 # Get Terraform outputs
 terraform output
 
-# Update the manifests with actual IRSA role ARNs
-# Replace placeholders in kubernetes/manifests/*.yaml files with output values:
-# - REPLACE_WITH_USER_SERVICE_IRSA_ROLE_ARN
-# - REPLACE_WITH_ORDER_SERVICE_IRSA_ROLE_ARN
-# - REPLACE_WITH_PAYMENT_SERVICE_IRSA_ROLE_ARN
-# - REPLACE_WITH_NOTIFICATION_SERVICE_IRSA_ROLE_ARN
-# - REPLACE_WITH_ANALYTICS_SERVICE_IRSA_ROLE_ARN
-# - REPLACE_WITH_RDS_SECRET_ARN
+# Update the manifests with actual values:
+# 1. Replace ECR image URLs with your actual repository URLs from terraform outputs
+# 2. Replace IRSA role ARNs with output values:
+#    - REPLACE_WITH_USER_SERVICE_IRSA_ROLE_ARN
+#    - REPLACE_WITH_ORDER_SERVICE_IRSA_ROLE_ARN
+#    - REPLACE_WITH_PAYMENT_SERVICE_IRSA_ROLE_ARN
+#    - REPLACE_WITH_NOTIFICATION_SERVICE_IRSA_ROLE_ARN
+#    - REPLACE_WITH_ANALYTICS_SERVICE_IRSA_ROLE_ARN
+# 3. Replace REPLACE_WITH_RDS_SECRET_ARN with actual RDS secret ARN
+
+# Example: Update user-service.yaml with ECR URL and IRSA role
+USER_ECR=$(terraform output -raw ecr_user_service_url)
+USER_ROLE=$(terraform output -raw user_service_irsa_role_arn)
+sed -i "s|image: .*user-service.*|image: $USER_ECR:latest|g" kubernetes/manifests/user-service.yaml
+sed -i "s|REPLACE_WITH_USER_SERVICE_IRSA_ROLE_ARN|$USER_ROLE|g" kubernetes/manifests/user-service.yaml
 ```
 
-### Step 6: Deploy Microservices
+### Step 7: Deploy Microservices
 
 ```bash
 # Deploy all microservices
