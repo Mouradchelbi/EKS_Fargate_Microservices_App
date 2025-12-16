@@ -1,9 +1,10 @@
 data "aws_partition" "current" {}
 
-# Random password for RDS
+# Random password for RDS (excludes /, @, ", and space per AWS RDS requirements)
 resource "random_password" "master" {
-  length  = 16
-  special = true
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
 # Secrets Manager secret for RDS credentials
