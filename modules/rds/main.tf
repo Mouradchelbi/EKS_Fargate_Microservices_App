@@ -171,7 +171,7 @@ resource "aws_rds_cluster_instance" "main" {
 resource "aws_iam_role" "rds_monitoring" {
   count = var.monitoring_interval > 0 ? 1 : 0
   
-  name_prefix = "${var.cluster_name}-rds-monitoring-"
+  name_prefix = "${var.environment}-rds-mon-"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

@@ -117,6 +117,7 @@ module "eks" {
 module "rds" {
   source                      = "../../modules/rds"
   cluster_name                = "${var.project_name}-staging"
+  environment                 = "staging"
   vpc_id                      = module.vpc.vpc_id
   vpc_cidr                    = var.vpc_cidr
   private_subnet_ids          = module.vpc.private_subnet_ids
@@ -254,6 +255,7 @@ module "fargate_profile_analytics_service" {
 module "irsa_user_service" {
   source               = "../../modules/irsa"
   cluster_name         = module.eks.cluster_name
+  environment          = "staging"
   service_name         = "user-service"
   namespace            = "user-service"
   service_account_name = "user-service-sa"
@@ -297,6 +299,7 @@ module "irsa_user_service" {
 module "irsa_order_service" {
   source               = "../../modules/irsa"
   cluster_name         = module.eks.cluster_name
+  environment          = "staging"
   service_name         = "order-service"
   namespace            = "order-service"
   service_account_name = "order-service-sa"
@@ -344,6 +347,7 @@ module "irsa_order_service" {
 module "irsa_payment_service" {
   source               = "../../modules/irsa"
   cluster_name         = module.eks.cluster_name
+  environment          = "staging"
   service_name         = "payment-service"
   namespace            = "payment-service"
   service_account_name = "payment-service-sa"
@@ -388,6 +392,7 @@ module "irsa_payment_service" {
 module "irsa_notification_service" {
   source               = "../../modules/irsa"
   cluster_name         = module.eks.cluster_name
+  environment          = "staging"
   service_name         = "notification-service"
   namespace            = "notification-service"
   service_account_name = "notification-service-sa"
@@ -429,6 +434,7 @@ module "irsa_notification_service" {
 module "irsa_analytics_service" {
   source               = "../../modules/irsa"
   cluster_name         = module.eks.cluster_name
+  environment          = "staging"
   service_name         = "analytics-service"
   namespace            = "analytics-service"
   service_account_name = "analytics-service-sa"

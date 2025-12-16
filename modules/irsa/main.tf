@@ -7,7 +7,7 @@ locals {
 
 # IAM Role for Service Account
 resource "aws_iam_role" "irsa" {
-  name_prefix = "${var.cluster_name}-${var.service_name}-irsa-"
+  name_prefix = "${var.environment}-${var.service_name}-"
   
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

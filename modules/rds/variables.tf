@@ -3,6 +3,11 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "environment" {
+  description = "Environment name (dev/staging/prod)"
+  type        = string
+}
+
 variable "vpc_id" {
   description = "VPC ID where RDS will be created"
   type        = string

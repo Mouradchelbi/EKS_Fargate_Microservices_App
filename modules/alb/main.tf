@@ -38,7 +38,7 @@ resource "aws_security_group" "alb" {
 
 # Application Load Balancer
 resource "aws_lb" "main" {
-  name               = "${var.cluster_name}-alb"
+  name_prefix        = substr("${var.cluster_name}-", 0, 6)
   internal           = var.internal
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
