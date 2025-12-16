@@ -1,0 +1,91 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "IAMRoleManagement",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:UpdateRole",
+        "iam:TagRole",
+        "iam:UntagRole"
+      ],
+      "Resource": [
+        "arn:aws:iam::685939060042:role/eks-fargate-microservices-*",
+        "arn:aws:iam::685939060042:role/prod-*",
+        "arn:aws:iam::685939060042:role/dev-*",
+        "arn:aws:iam::685939060042:role/staging-*"
+      ]
+    },
+    {
+      "Sid": "IAMPolicyManagement",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreatePolicy",
+        "iam:DeletePolicy",
+        "iam:GetPolicy",
+        "iam:GetPolicyVersion",
+        "iam:ListPolicyVersions",
+        "iam:CreatePolicyVersion",
+        "iam:DeletePolicyVersion",
+        "iam:TagPolicy",
+        "iam:UntagPolicy"
+      ],
+      "Resource": "arn:aws:iam::685939060042:policy/*"
+    },
+    {
+      "Sid": "IAMRolePolicyAttachment",
+      "Effect": "Allow",
+      "Action": [
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:GetRolePolicy",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies"
+      ],
+      "Resource": [
+        "arn:aws:iam::685939060042:role/eks-fargate-microservices-*",
+        "arn:aws:iam::685939060042:role/prod-*",
+        "arn:aws:iam::685939060042:role/dev-*",
+        "arn:aws:iam::685939060042:role/staging-*"
+      ]
+    },
+    {
+      "Sid": "IAMOIDCProvider",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateOpenIDConnectProvider",
+        "iam:DeleteOpenIDConnectProvider",
+        "iam:GetOpenIDConnectProvider",
+        "iam:TagOpenIDConnectProvider",
+        "iam:UntagOpenIDConnectProvider",
+        "iam:UpdateOpenIDConnectProviderThumbprint"
+      ],
+      "Resource": "arn:aws:iam::685939060042:oidc-provider/*"
+    },
+    {
+      "Sid": "PassRoleToEKSAndRDS",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": [
+        "arn:aws:iam::685939060042:role/eks-fargate-microservices-*",
+        "arn:aws:iam::685939060042:role/prod-*",
+        "arn:aws:iam::685939060042:role/dev-*",
+        "arn:aws:iam::685939060042:role/staging-*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": [
+            "eks.amazonaws.com",
+            "eks-fargate-pods.amazonaws.com",
+            "monitoring.rds.amazonaws.com"
+          ]
+        }
+      }
+    }
+  ]
+}
