@@ -89,7 +89,67 @@ eks-fargate-infrastructure/
 1. **AWS CLI** configured with appropriate credentials
 2. **Terraform** >= 1.5
 3. **kubectl** for Kubernetes management
-4. **AWS IAM permissions** for creating EKS, VPC, RDS, etc.
+4. **Helm** >= 3.0 for ALB Controller installation
+5. **AWS IAM user** with the following policies attached:
+   
+   **Managed Policies:**
+   - `AmazonEC2FullAccess`
+   - `AmazonRDSFullAccess`
+   - `AmazonElastiCacheFullAccess`
+   - `AmazonEC2ContainerRegistryFullAccess`
+   - `IAMFullAccess` (for IAM roles & OIDC provider creation)
+   - `SecretsManagerReadWrite`
+   - `AmazonS3FullAccess`
+   - `CloudWatchFullAccess`
+   
+   **Inline Policy for EKS Full Access:**
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": ["eks:*"],
+         "Resource": "*"
+       },
+       {
+         "Effect": "Allow",
+         "Action": ["iam:PassRole"],
+         "Resource": "*",
+         "Condition": {
+           "StringEquals": {
+             "iam:PassedToService": "eks.amazonaws.com"
+           }
+         }
+       }
+     ]
+   }
+   ```
+
+> **Note**: For production environments, consider using more restrictive custom policies following the principle of least privilege. The IAM user should be configured in your AWS CLI profile before deployment.
+
+### Quick Start: Automated Deployment
+
+The fastest way to deploy is using our automated deployment script:
+
+```bash
+# Set your AWS profile
+export AWS_PROFILE=your-iam-user-profile
+
+# Run the complete deployment (takes ~20-30 minutes)
+./scripts/deploy-infra.sh prod
+```
+
+This script automatically handles:
+- ✅ S3 backend creation
+- ✅ Infrastructure deployment (VPC, EKS, RDS, ElastiCache, ALB, ECR)
+- ✅ kubectl configuration
+- ✅ AWS Load Balancer Controller installation
+- ✅ Microservices deployment
+
+For manual step-by-step deployment, continue with the steps below.
+
+---
 
 ### Step 1: Create S3 Backend (First Time Only)
 
